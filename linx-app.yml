@@ -1,0 +1,9 @@
+# env variables exposed to the Linx Portal
+env:
+  - name: PORT
+    default: "3000"
+
+# Linx Portal configuration for the application
+port:
+  default: 3000
+  linked_env_var: PORT
