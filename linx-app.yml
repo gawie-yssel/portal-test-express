@@ -3,6 +3,23 @@ env:
   - name: PORT
     default: "3000"
 
+  # Postgres connectivity test (set DATABASE_URL, or the discrete PG* vars)
+  - name: DATABASE_URL
+  - name: PGHOST
+  - name: PGPORT
+    default: "5432"
+  - name: PGUSER
+  - name: PGPASSWORD
+  - name: PGDATABASE
+  - name: PGSSL
+    default: "false"
+
+  # S3 connectivity test
+  - name: AWS_REGION
+  - name: AWS_ACCESS_KEY_ID
+  - name: AWS_SECRET_ACCESS_KEY
+  - name: S3_BUCKET
+
 # Linx Portal configuration for the application
 port:
   default: 3000

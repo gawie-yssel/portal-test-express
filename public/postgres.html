@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Postgres connectivity test</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav>
+    <a href="/postgres.html" class="active">Postgres</a>
+    <a href="/s3.html">S3</a>
+  </nav>
+  <main>
+    <h1>Postgres connectivity test</h1>
+    <p class="muted">
+      Connection details are read from environment variables on the server
+      (<code>DATABASE_URL</code> or <code>PGHOST/PGUSER/PGDATABASE</code>).
+    </p>
+
+    <div class="panel">
+      <h2 style="margin-top:0;">Configuration</h2>
+      <dl class="config" id="config"><dd class="muted">Loading…</dd></dl>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <button id="ping-btn">Ping connection</button>
+        <span class="muted">Runs <code>SELECT now(), version()</code>.</span>
+      </div>
+      <div id="ping-status" class="status"></div>
+    </div>
+
+    <div class="panel">
+      <label for="sql">SQL query</label>
+      <textarea id="sql" placeholder="SELECT * FROM information_schema.tables LIMIT 10;"></textarea>
+      <div class="row" style="margin-top: 0.6rem;">
+        <button id="run-btn">Run query</button>
+      </div>
+      <div id="query-status" class="status"></div>
+      <div id="results"></div>
+    </div>
+  </main>
+  <script src="/js/postgres.js"></script>
+</body>
+</html>

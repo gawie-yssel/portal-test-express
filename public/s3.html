@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S3 connectivity test</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav>
+    <a href="/postgres.html">Postgres</a>
+    <a href="/s3.html" class="active">S3</a>
+  </nav>
+  <main>
+    <h1>S3 connectivity test</h1>
+    <p class="muted">
+      Bucket and credentials are read from environment variables on the server
+      (<code>AWS_REGION</code>, <code>S3_BUCKET</code>, AWS credentials).
+    </p>
+
+    <div class="panel">
+      <h2 style="margin-top:0;">Configuration</h2>
+      <dl class="config" id="config"><dd class="muted">Loading…</dd></dl>
+    </div>
+
+    <div class="panel">
+      <label for="prefix">Prefix (optional)</label>
+      <div class="row">
+        <input type="text" id="prefix" placeholder="folder/" style="max-width: 300px;" />
+        <button id="list-btn">List objects</button>
+      </div>
+      <div id="list-status" class="status"></div>
+      <div id="objects"></div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0;">Upload object</h2>
+      <label for="file">File</label>
+      <input type="file" id="file" />
+      <label for="key" style="margin-top:0.6rem;">Key (optional — defaults to file name)</label>
+      <input type="text" id="key" placeholder="optional/custom/key.txt" />
+      <div class="row" style="margin-top:0.6rem;">
+        <button id="upload-btn">Upload</button>
+      </div>
+      <div id="upload-status" class="status"></div>
+    </div>
+  </main>
+  <script src="/js/s3.js"></script>
+</body>
+</html>
