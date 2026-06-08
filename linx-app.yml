@@ -19,6 +19,7 @@ env:
   - name: AWS_ACCESS_KEY_ID
   - name: AWS_SECRET_ACCESS_KEY
   - name: S3_BUCKET
+  - name: S3_ENDPOINT
 
 # Linx Portal configuration for the application
 port:
