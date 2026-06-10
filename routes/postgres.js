@@ -25,6 +25,7 @@ router.get('/ping', requireConfigured, async (req, res) => {
     const info = await db.ping();
     res.json({ ok: true, ...info });
   } catch (err) {
+    req.log.warn('postgres ping failed', { err });
     res.status(500).json({ ok: false, error: err.message });
   }
 });
@@ -43,6 +44,7 @@ router.post('/query', requireConfigured, async (req, res) => {
     const result = await db.query(sql, params);
     res.json({ ok: true, ...result });
   } catch (err) {
+    req.log.warn('postgres query failed', { err });
     res.status(500).json({ ok: false, error: err.message });
   }
 });

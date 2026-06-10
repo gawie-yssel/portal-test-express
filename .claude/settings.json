@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "PowerShell(npm install)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "PowerShell(npm install 2>&1)",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Remove-Item boot.log,boot2.log,boot3.log,out.log,err.log -ErrorAction SilentlyContinue; foreach \\($f in @\\(\"index.js\",\"tracing.js\",\"lib/logger.js\",\"lib/metrics.js\",\"lib/db.js\",\"routes/s3.js\",\"routes/postgres.js\"\\)\\) { node --check $f; if \\($LASTEXITCODE -eq 0\\) { Write-Host \"OK  $f\" } else { Write-Host \"FAIL $f\" } }; Write-Host \"--- git status ---\"; git status --short)"
     ]
   }
 }

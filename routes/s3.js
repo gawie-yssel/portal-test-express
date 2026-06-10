@@ -6,6 +6,7 @@ const {
   DeleteObjectCommand,
 } = require('@aws-sdk/client-s3');
 const s3 = require('../lib/s3');
+const metrics = require('../lib/metrics');
 
 const router = express.Router();
 
@@ -33,6 +34,7 @@ router.get('/config', (req, res) => {
 });
 
 router.get('/list', requireConfigured, async (req, res) => {
+  const start = Date.now();
   try {
     const out = await s3.getClient().send(
       new ListObjectsV2Command({
@@ -45,8 +47,10 @@ router.get('/list', requireConfigured, async (req, res) => {
       size: o.Size,
       lastModified: o.LastModified,
     }));
+    req.log.info('s3 list ok', { op: 'list', count: objects.length, durationMs: Date.now() - start });
     res.json({ ok: true, objects, isTruncated: Boolean(out.IsTruncated) });
   } catch (err) {
+    req.log.warn('s3 list failed', { op: 'list', durationMs: Date.now() - start, err });
     res.status(500).json({ ok: false, error: err.message });
   }
 });
@@ -57,6 +61,7 @@ router.post('/upload', requireConfigured, upload.single('file'), async (req, res
   }
 
   const key = (req.body && req.body.key && req.body.key.trim()) || req.file.originalname;
+  const start = Date.now();
 
   try {
     await s3.getClient().send(
@@ -67,8 +72,16 @@ router.post('/upload', requireConfigured, upload.single('file'), async (req, res
         ContentType: req.file.mimetype,
       })
     );
+    metrics.recordUploadBytes(req.file.size);
+    req.log.info('s3 upload ok', {
+      op: 'upload',
+      key,
+      bytes: req.file.size,
+      durationMs: Date.now() - start,
+    });
     res.json({ ok: true, key });
   } catch (err) {
+    req.log.warn('s3 upload failed', { op: 'upload', key, durationMs: Date.now() - start, err });
     res.status(500).json({ ok: false, error: err.message });
   }
 });
@@ -79,12 +92,15 @@ router.delete('/object', requireConfigured, async (req, res) => {
     return res.status(400).json({ ok: false, error: 'A non-empty "key" is required.' });
   }
 
+  const start = Date.now();
   try {
     await s3.getClient().send(
       new DeleteObjectCommand({ Bucket: s3.bucket(), Key: key })
     );
+    req.log.info('s3 delete ok', { op: 'delete', key, durationMs: Date.now() - start });
     res.json({ ok: true, key });
   } catch (err) {
+    req.log.warn('s3 delete failed', { op: 'delete', key, durationMs: Date.now() - start, err });
     res.status(500).json({ ok: false, error: err.message });
   }
 });

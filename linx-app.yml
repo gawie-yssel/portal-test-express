@@ -21,6 +21,17 @@ env:
   - name: S3_BUCKET
   - name: S3_ENDPOINT
 
+  # Observability
+  - name: LOG_LEVEL
+    default: "info"
+  - name: LOG_SQL
+    default: "false"
+  - name: OTEL_SERVICE_NAME
+    default: "portal-test-express"
+  - name: OTEL_EXPORTER_OTLP_ENDPOINT
+  - name: OTEL_SDK_DISABLED
+    default: "false"
+
 # Linx Portal configuration for the application
 port:
   default: 3000
