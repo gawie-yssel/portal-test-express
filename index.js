@@ -8,8 +8,10 @@ const multer = require('multer');
 const logger = require('./lib/logger');
 const db = require('./lib/db');
 const s3 = require('./lib/s3');
+const disk = require('./lib/disk');
 const postgresRouter = require('./routes/postgres');
 const s3Router = require('./routes/s3');
+const diskRouter = require('./routes/disk');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -51,6 +53,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/postgres', postgresRouter);
 app.use('/api/s3', s3Router);
+app.use('/api/disk', diskRouter);
 
 // Centralised error handler — turns multer/upload failures and any other
 // thrown errors into the uniform { ok:false, error } shape.
@@ -66,5 +69,6 @@ app.listen(port, () => {
     port,
     postgres: db.safeConfig(),
     s3: s3.safeConfig(),
+    disk: disk.safeConfig(),
   });
 });

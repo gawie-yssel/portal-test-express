@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disk connectivity test</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/postgres.html">Postgres</a>
+    <a href="/s3.html">S3</a>
+    <a href="/disk.html" class="active">Disk</a>
+  </nav>
+  <main>
+    <h1>Disk connectivity test</h1>
+    <p class="muted">
+      The mounted volume path is read from an environment variable on the server
+      (<code>DISK_PATH</code>). All file operations are confined to that directory.
+    </p>
+
+    <div class="panel">
+      <h2 style="margin-top:0;">Configuration</h2>
+      <dl class="config" id="config"><dd class="muted">Loading…</dd></dl>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <button id="health-btn">Run health check</button>
+        <span class="muted">Writes a temp file, reads it back, verifies, and deletes it.</span>
+      </div>
+      <div id="health-status" class="status"></div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <button id="stats-btn">Check capacity</button>
+        <span class="muted">Total / used / free space on the mount.</span>
+      </div>
+      <div id="stats-status" class="status"></div>
+      <div id="stats"></div>
+    </div>
+
+    <div class="panel">
+      <label for="prefix">Sub-path (optional)</label>
+      <div class="row">
+        <input type="text" id="prefix" placeholder="subdir/" style="max-width: 300px;" />
+        <button id="list-btn">List files</button>
+      </div>
+      <div id="list-status" class="status"></div>
+      <div id="entries"></div>
+      <div id="read-result"></div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin-top:0;">Write file</h2>
+      <label for="file">File</label>
+      <input type="file" id="file" />
+      <label for="key" style="margin-top:0.6rem;">Key (optional — defaults to file name)</label>
+      <input type="text" id="key" placeholder="optional/custom/name.txt" />
+      <div class="row" style="margin-top:0.6rem;">
+        <button id="write-btn">Write</button>
+      </div>
+      <div id="write-status" class="status"></div>
+    </div>
+  </main>
+  <script src="/js/disk.js"></script>
+</body>
+</html>

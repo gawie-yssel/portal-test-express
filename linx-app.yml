@@ -21,6 +21,9 @@ env:
   - name: S3_BUCKET
   - name: S3_ENDPOINT
 
+  # Disk connectivity test  
+  - name: DISK_PATH
+
   # Observability
   - name: LOG_LEVEL
     default: "info"
