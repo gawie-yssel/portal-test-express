@@ -30,6 +30,8 @@ if (String(process.env.OTEL_SDK_DISABLED).toLowerCase() === 'true') {
       OTLPMetricExporter,
     } = require('@opentelemetry/exporter-metrics-otlp-proto');
     const { PeriodicExportingMetricReader } = require('@opentelemetry/sdk-metrics');
+    const { OTLPLogExporter } = require('@opentelemetry/exporter-logs-otlp-proto');
+    const { BatchLogRecordProcessor } = require('@opentelemetry/sdk-logs');
 
     const pkg = require('./package.json');
 
@@ -47,6 +49,9 @@ if (String(process.env.OTEL_SDK_DISABLED).toLowerCase() === 'true') {
       metricReader: new PeriodicExportingMetricReader({
         exporter: new OTLPMetricExporter(),
       }),
+      // Bridges the console logger (lib/logger.js) to OTLP via the OTEL Logs API.
+      // Same OTEL_EXPORTER_OTLP_ENDPOINT/headers as traces and metrics.
+      logRecordProcessors: [new BatchLogRecordProcessor(new OTLPLogExporter())],
       instrumentations: [
         new HttpInstrumentation(),
         new ExpressInstrumentation(),
