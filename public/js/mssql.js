@@ -49,26 +49,34 @@ function renderConfig(c) {
   const el = document.getElementById('config');
   if (!c.configured) {
     el.innerHTML =
-      '<dd class="muted">Not configured. Set <code>DATABASE_URL</code> or <code>PGHOST/PGUSER/PGDATABASE</code>.</dd>';
+      '<dd class="muted">Not configured. Set <code>MSSQL_CONNECTION_STRING</code> or <code>MSSQL_HOST/MSSQL_USER/MSSQL_DATABASE</code>.</dd>';
     return;
   }
+  // An unparseable connection string leaves the flags undefined — show "—"
+  // rather than a misleading "disabled".
+  const tri = (v) => (v === undefined || v === null ? '—' : v ? 'enabled' : 'disabled');
   const rows = [
-    ['Source', c.source],
-    ['Host', c.host || '—'],
-    ['Port', c.port || '—'],
-    ['User', c.user || '—'],
-    ['Database', c.database || '—'],
-    ['SSL', c.ssl ? 'enabled' : 'disabled'],
+    ['Source', escapeHtml(c.source)],
+    ['Server', escapeHtml(c.host || '—')],
+    ['Port', escapeHtml(c.port || '—')],
+    ['User', escapeHtml(c.user || '—')],
+    ['Database', escapeHtml(c.database || '—')],
+    ['Encrypt', tri(c.encrypt)],
+    ['Trust server certificate', tri(c.trustServerCertificate)],
     ['Password', badge(c.passwordSet)],
   ];
   el.innerHTML = rows
     .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
     .join('');
+  if (c.parseError) {
+    el.innerHTML +=
+      '<dd class="muted">Could not parse <code>MSSQL_CONNECTION_STRING</code>. Only the ADO form is supported, e.g. <code>Server=host,1433;Database=db;User Id=me;Password=…</code></dd>';
+  }
 }
 
 async function loadConfig() {
   try {
-    const res = await fetch('/api/postgres/config');
+    const res = await fetch('/api/mssql/config');
     const data = await res.json();
     if (data.ok) renderConfig(data.config);
   } catch (err) {
@@ -83,7 +91,7 @@ const pingStatus = document.getElementById('ping-status');
 pingBtn.addEventListener('click', async () => {
   pingBtn.disabled = true;
   try {
-    const res = await fetch('/api/postgres/ping');
+    const res = await fetch('/api/mssql/ping');
     const data = await res.json().catch(() => ({}));
     if (data.ok) {
       setStatus(pingStatus, true, `Connected.\n${data.version}\nServer time: ${data.serverTime}`);
@@ -109,7 +117,7 @@ runBtn.addEventListener('click', async () => {
   }
   runBtn.disabled = true;
   try {
-    const { res, data } = await postJson('/api/postgres/query', { sql });
+    const { res, data } = await postJson('/api/mssql/query', { sql });
     if (data.ok) {
       setStatus(queryStatus, true, `Success — ${data.rowCount} row(s).`);
       renderTable(results, data.fields || [], data.rows || []);

@@ -1,5 +1,5 @@
 // OpenTelemetry bootstrap. MUST run before any instrumented library (express,
-// pg, @aws-sdk/client-s3) is required, so it's loaded via `node --require
+// pg, mssql/tedious, @aws-sdk/client-s3) is required, so it's loaded via `node --require
 // ./tracing.js index.js` (see package.json "start").
 //
 // All exporter wiring (endpoint, headers, protocol) comes from standard OTEL_*
@@ -19,11 +19,12 @@ if (String(process.env.OTEL_SDK_DISABLED).toLowerCase() === 'true') {
       ATTR_SERVICE_VERSION,
     } = require('@opentelemetry/semantic-conventions');
     // Only the instrumentations this app actually exercises (http, express, pg,
-    // aws-sdk) — avoids the auto-instrumentations-node meta-package's large
-    // bundle and its multi-second cold-start cost.
+    // tedious, aws-sdk) — avoids the auto-instrumentations-node meta-package's
+    // large bundle and its multi-second cold-start cost.
     const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
     const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express');
     const { PgInstrumentation } = require('@opentelemetry/instrumentation-pg');
+    const { TediousInstrumentation } = require('@opentelemetry/instrumentation-tedious');
     const { AwsInstrumentation } = require('@opentelemetry/instrumentation-aws-sdk');
     const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-proto');
     const {
@@ -58,6 +59,10 @@ if (String(process.env.OTEL_SDK_DISABLED).toLowerCase() === 'true') {
         // enhancedDatabaseReporting captures SQL param values on spans — gate it
         // behind LOG_SQL to match the console logger.
         new PgInstrumentation({ enhancedDatabaseReporting: logSql }),
+        // The mssql driver runs on tedious, so the MSSQL page's DB spans come
+        // from here. There's no enhancedDatabaseReporting equivalent — the
+        // statement text is captured as db.statement either way.
+        new TediousInstrumentation(),
         new AwsInstrumentation(),
       ],
     });

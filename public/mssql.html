@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Postgres connectivity test</title>
+  <title>MSSQL connectivity test</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <nav>
     <a href="/">Home</a>
-    <a href="/postgres.html" class="active">Postgres</a>
-    <a href="/mssql.html">MSSQL</a>
+    <a href="/postgres.html">Postgres</a>
+    <a href="/mssql.html" class="active">MSSQL</a>
     <a href="/s3.html">S3</a>
     <a href="/disk.html">Disk</a>
   </nav>
   <main>
-    <h1>Postgres connectivity test</h1>
+    <h1>MSSQL connectivity test</h1>
     <p class="muted">
       Connection details are read from environment variables on the server
-      (<code>DATABASE_URL</code> or <code>PGHOST/PGUSER/PGDATABASE</code>).
+      (<code>MSSQL_CONNECTION_STRING</code> or
+      <code>MSSQL_HOST/MSSQL_USER/MSSQL_DATABASE</code>).
     </p>
 
     <div class="panel">
@@ -29,21 +30,25 @@
     <div class="panel">
       <div class="row">
         <button id="ping-btn">Ping connection</button>
-        <span class="muted">Runs <code>SELECT now(), version()</code>.</span>
+        <span class="muted">Runs <code>SELECT SYSDATETIMEOFFSET(), @@VERSION</code>.</span>
       </div>
       <div id="ping-status" class="status"></div>
     </div>
 
     <div class="panel">
-      <label for="sql">SQL query</label>
-      <textarea id="sql" placeholder="SELECT * FROM information_schema.tables LIMIT 10;"></textarea>
+      <label for="sql">T-SQL query</label>
+      <textarea id="sql" placeholder="SELECT TOP 10 * FROM INFORMATION_SCHEMA.TABLES;"></textarea>
       <div class="row" style="margin-top: 0.6rem;">
         <button id="run-btn">Run query</button>
+        <span class="muted">
+          Parameters are supported via the API — a <code>params</code> array binds as
+          <code>@p1</code>, <code>@p2</code>, …
+        </span>
       </div>
       <div id="query-status" class="status"></div>
       <div id="results"></div>
     </div>
   </main>
-  <script src="/js/postgres.js"></script>
+  <script src="/js/mssql.js"></script>
 </body>
 </html>

@@ -7,9 +7,11 @@ const multer = require('multer');
 
 const logger = require('./lib/logger');
 const db = require('./lib/db');
+const mssql = require('./lib/mssql');
 const s3 = require('./lib/s3');
 const disk = require('./lib/disk');
 const postgresRouter = require('./routes/postgres');
+const mssqlRouter = require('./routes/mssql');
 const s3Router = require('./routes/s3');
 const diskRouter = require('./routes/disk');
 
@@ -52,6 +54,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/postgres', postgresRouter);
+app.use('/api/mssql', mssqlRouter);
 app.use('/api/s3', s3Router);
 app.use('/api/disk', diskRouter);
 
@@ -68,6 +71,7 @@ app.listen(port, () => {
   logger.info('server started', {
     port,
     postgres: db.safeConfig(),
+    mssql: mssql.safeConfig(),
     s3: s3.safeConfig(),
     disk: disk.safeConfig(),
   });

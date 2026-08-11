@@ -14,6 +14,19 @@ env:
   - name: PGSSL
     default: "false"
 
+  # MSSQL connectivity test (set MSSQL_CONNECTION_STRING, or the discrete MSSQL_* vars)
+  - name: MSSQL_CONNECTION_STRING
+  - name: MSSQL_HOST
+  - name: MSSQL_PORT
+    default: "1433"
+  - name: MSSQL_USER
+  - name: MSSQL_PASSWORD
+  - name: MSSQL_DATABASE
+  - name: MSSQL_ENCRYPT
+    default: "true"
+  - name: MSSQL_TRUST_SERVER_CERTIFICATE
+    default: "true"
+
   # S3 connectivity test
   - name: AWS_REGION
   - name: AWS_ACCESS_KEY_ID
