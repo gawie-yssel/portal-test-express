@@ -14,6 +14,32 @@ npm start              # serves on http://localhost:3000
 `npm start` runs `node --require ./tracing.js index.js` so OpenTelemetry
 initializes before the app loads.
 
+## Testing
+
+```bash
+npm test               # offline unit + route tests (no docker, no .env needed)
+```
+
+The unit tier runs Node's built-in test runner against the app in-process
+(supertest), with every backend stubbed at the module boundary, so it never
+touches a network or a real service. A populated local `.env` does not affect
+it — the backend variables are scrubbed after the app loads.
+
+An opt-in integration tier runs the same routes against real services:
+
+```bash
+docker compose -f docker-compose.test.yml up -d
+npm run test:integration
+docker compose -f docker-compose.test.yml down -v
+```
+
+Credentials and ports come from the committed `.env.test`, which matches
+`docker-compose.test.yml` (throwaway values, non-default ports). Anything that
+isn't reachable is **skipped**, not failed, so this is safe to run without
+docker. Note the SQL Server container accepts TCP connections well before it
+accepts logins — give it 30–60 seconds after `up -d` or the MSSQL tests will
+skip/fail on login.
+
 ## Endpoints
 
 - `GET /health` — liveness probe (`{ status, uptime }`)

@@ -67,12 +67,19 @@ app.use((err, req, res, next) => {
   res.status(status).json({ ok: false, error: err.message });
 });
 
-app.listen(port, () => {
-  logger.info('server started', {
-    port,
-    postgres: db.safeConfig(),
-    mssql: mssql.safeConfig(),
-    s3: s3.safeConfig(),
-    disk: disk.safeConfig(),
+// Only listen when run directly — requiring this module (tests) just gets the
+// configured app. `npm start`'s `node --require ./tracing.js index.js` still
+// takes this branch: index.js remains require.main under --require.
+if (require.main === module) {
+  app.listen(port, () => {
+    logger.info('server started', {
+      port,
+      postgres: db.safeConfig(),
+      mssql: mssql.safeConfig(),
+      s3: s3.safeConfig(),
+      disk: disk.safeConfig(),
+    });
   });
-});
+}
+
+module.exports = app;
