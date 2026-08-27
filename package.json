@@ -4,7 +4,12 @@
   "description": "Simple Express app that returns Hello world",
   "main": "index.js",
   "scripts": {
-    "start": "node --require ./tracing.js index.js"
+    "start": "node --require ./tracing.js index.js",
+    "test": "node --test \"test/unit/*.test.js\"",
+    "test:integration": "node --env-file=.env.test --test \"test/integration/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1107.0",
@@ -29,5 +34,8 @@
     "mssql": "^12.7.0",
     "multer": "^2.2.0",
     "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2"
   }
 }
