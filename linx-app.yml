@@ -53,7 +53,18 @@ port:
   default: 3000
   linked_env_var: PORT
 
-# Run these tests
 test:
   image: node:22
-  command: npm ci && npm test
+  command: npm ci && npm run test:integration
+  services:
+    - image: postgres:16-alpine
+      env:
+        POSTGRES_USER: portal
+        POSTGRES_PASSWORD: portal_test
+        POSTGRES_DB: portal_test
+    - image: mcr.microsoft.com/mssql/server:2022-latest
+      env:
+        ACCEPT_EULA: "Y"
+        MSSQL_SA_PASSWORD: "Portal_Test1!"
+        MSSQL_PID: Developer
+
