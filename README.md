@@ -139,3 +139,4 @@ returns at most the first 64 KB of a file (flagged by `truncated` in the respons
 
 > Any standard `OTEL_*` variable (e.g. `OTEL_EXPORTER_OTLP_HEADERS`,
 > `OTEL_EXPORTER_OTLP_PROTOCOL`) is also honored by the SDK.
+
