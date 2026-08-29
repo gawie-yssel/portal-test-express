@@ -55,7 +55,7 @@ port:
 
 test:
   image: node:22
-  command: npm ci && npm run test:integration
+  command: npm ci && npm run test && npm run test:integration
   services:
     - image: postgres:16-alpine
       env:
