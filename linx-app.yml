@@ -55,7 +55,23 @@ port:
 
 test:
   image: node:22
-  command: npm ci && npm run test && npm run test:integration
+  command: |
+    npm ci
+    npm run test
+    # Point the integration tier at the sidecar services below. Real env vars
+    # take precedence over --env-file, so .env.test's local-only ports (which
+    # exist to avoid clashing with a developer's own services) don't apply here.
+    export S3_ENDPOINT=http://localhost:9000
+    export AWS_REGION=us-east-1
+    export AWS_ACCESS_KEY_ID=portaltest
+    export AWS_SECRET_ACCESS_KEY=portaltest
+    export S3_BUCKET=portal-test
+    export DISK_PATH=/mnt/data
+    # MinIO accepts connections before it can serve S3, and the integration
+    # tier skips (never fails) on an unreachable service — so wait for it or
+    # the object storage tests quietly vanish.
+    until curl -sf http://localhost:9000/minio/health/live >/dev/null; do sleep 1; done
+    npm run test:integration
   services:
     - image: postgres:16-alpine
       env:
@@ -67,4 +83,13 @@ test:
         ACCEPT_EULA: "Y"
         MSSQL_SA_PASSWORD: "Portal_Test1!"
         MSSQL_PID: Developer
-
+    # Object storage under test — same image and throwaway credentials as
+    # docker-compose.test.yml. The suite creates S3_BUCKET itself.
+    - image: minio/minio
+      args: server /data --address :9000
+      env:
+        MINIO_ROOT_USER: portaltest
+        MINIO_ROOT_PASSWORD: portaltest
+  # Mounted volume the disk tests exercise, addressed by DISK_PATH above.
+  disks:
+    - /mnt/data
